@@ -25,11 +25,11 @@ ENABLE_CH_I = 0x33
 
 def verifyChecksum(list_values):
     counter = 0
-    i = 0
-    while(i < len(list_values)):
-        counter += list_values[i]
-        i += 1
-    counter = (counter & 0xFF)
+    
+    for data in list_values:
+        counter += data
+       
+    counter = (counter & 255)
 
     return(counter)
 
@@ -54,7 +54,7 @@ class Communication(Thread):
                 logger.info(f"TCP/IP Server on port {str(self.port)} started.\n")
 
                 while(True):
-                    logger.info("Waiting for connection.\n")
+                    logger.info("Waiting for connection ...\n")
                     con, client_info = self.tcp.accept()
 
                     # New connection
@@ -62,7 +62,7 @@ class Communication(Thread):
 
                     while (True):
                         # Get message
-                        message = [ord(i) for i in con.recv(100).decode('latin-1')]
+                        message = [ord(i) for i in con.recv(100).decode()]
                         if(message):
                             if (verifyChecksum(message) == 0):
                                 # Variable Read
@@ -88,12 +88,12 @@ class Communication(Thread):
                                     logger.warning("First byte must be 0x20")
 
                             else:
-                                logger.warning(f"Unknown message: {message}\n, verify checksum.")
+                                logger.warning(f"Unknown message: {message}, verify checksum.\n")
                                 continue
 
                         else:
                             # Disconnection
-                            logger.info(f"Client {client_info[0]}:{str(client_info[1])} disconected\n")
+                            logger.info(f"Client {client_info[0]}:{str(client_info[1])} disconected.\n")
                             break
 
             except Exception:
