@@ -96,9 +96,9 @@ class Communication(Thread):
                             logger.info(f"Client {client_info[0]}:{str(client_info[1])} disconected.\n")
                             break
 
-            except Exception:
+            except Exception as e:
                 self.tcp.close()
-                logger.warning("Connection problem. TCP/IP server was closed.\n")
+                logger.warning(f"Connection problem: {e}. \nTCP/IP server was closed.\n")
                 time.sleep(5)
 
 # --------------------- MAIN LOOP ---------------------
@@ -109,7 +109,7 @@ global logger
 logger = logging.getLogger()
 
 # Socket thread
-net = Communication(5000)
+net = Communication(5050)
 net.daemon = True
 net.start()
 
