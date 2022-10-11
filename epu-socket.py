@@ -2,7 +2,7 @@
 
 import time
 import socket
-global logging
+import logging
 from threading import Thread
 
 # BSMP Variable IDs
