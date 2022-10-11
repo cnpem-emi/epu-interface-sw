@@ -2,6 +2,7 @@
 
 import time
 import socket
+import struct
 import logging
 from threading import Thread
 
@@ -22,6 +23,26 @@ ENABLE_CH_S = 0x32
 HALT_CH_I =   0x13
 START_CH_I =  0x23
 ENABLE_CH_I = 0x33
+
+def sendVariable(variableID, size):
+    send_message = [0x00, 0x11] + [c for c in struct.pack("!h", size + 1)] + [variableID]
+    if size == 1:
+        send_message = send_message + [value]
+    elif size == 2:
+        send_message = send_message + [c for c in struct.pack("!h", value)]
+    elif size == 4:
+        send_message = send_message + [c for c in struct.pack("!I", value)]
+    return("".join(map(chr, includeChecksum(send_message))))
+
+def includeChecksum(list_values):
+    counter = 0
+    i = 0
+    while (i < len(list_values)):
+        counter += list_values[i]
+        i += 1
+    counter = (counter & 0xFF)
+    counter = (256 - counter) & 0xFF
+    return(list_values + [counter])
 
 def verifyChecksum(list_values):
     counter = 0
@@ -67,20 +88,31 @@ class Communication(Thread):
                             if (verifyChecksum(message) == 0):
                                 # Variable Read
                                 if message[1] == 0x10:
-                                    pass        #Nothing to read
+                                    if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
+                                        logger.info(f"HALT COMMAND READ - Channel {self.ch[message[4] % 0x10]}")
+                                        # CALL_FUNC_READ(message[4] % 0x10)
 
+                                    elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
+                                        logger.info(f"START COMMAND READ - Channel {self.ch[message[4] % 0x20]}")
+                                        # CALL_FUNC_READ(message[4] % 0x20)
+
+                                    elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
+                                        logger.info(f"ENABLE COMMAND READ - Channel {self.ch[message[4] % 0x30]}")
+                                        # CALL_FUNC_READ(message[4] % 0x30)
+
+                                # Variable Write
                                 elif message[1] == 0x20:
                                     if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
                                         logger.info(f"HALT COMMAND RECEIVED - Channel {self.ch[message[4]%0x10]}")
-                                        #CALL_FUNC(message[4] % 0x10)
+                                        #CALL_FUNC_WRITE(message[4] % 0x10)
 
                                     elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
                                         logger.info(f"START COMMAND RECEIVED - Channel {self.ch[message[4] % 0x20]}")
-                                        #CALL_FUNC(message[4] % 0x20)
+                                        #CALL_FUNC_WRITE(message[4] % 0x20)
 
                                     elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
                                         logger.info(f"ENABLE COMMAND RECEIVED - Channel {self.ch[message[4] % 0x30]}")
-                                        #CALL_FUNC(message[4] % 0x30)
+                                        #CALL_FUNC_WRITE(message[4] % 0x30)
 
                                     else:
                                         logger.error("Command not supported")

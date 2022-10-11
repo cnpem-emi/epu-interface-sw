@@ -1,0 +1,8 @@
+record(mbbi, "$(PV_NAME)"){
+    field(DESC, "Status from UPS")
+    field(DTYP, "stream")
+    field(INP,  "@epu-interface.proto getValue($(BSMP_ID)) $(PORT)")
+    field(SCAN, "$(SCAN_RATE)")
+    field(ZRST, "NO")
+    field(ONST, "YES")
+}
