@@ -5,6 +5,7 @@ import socket
 import struct
 import logging
 from threading import Thread
+from epu-serial import *
 
 # BSMP Variable IDs
 
@@ -46,12 +47,10 @@ def includeChecksum(list_values):
 
 def verifyChecksum(list_values):
     counter = 0
-    
     for data in list_values:
         counter += data
        
     counter = (counter & 255)
-
     return(counter)
 
 # Thead to send and receive values on demand
@@ -90,34 +89,37 @@ class Communication(Thread):
                                 if message[1] == 0x10:
                                     if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
                                         logger.info(f"HALT COMMAND READ - Channel {self.ch[message[4] % 0x10]}")
-                                        # CALL_FUNC_READ(message[4] % 0x10)
+                                        read_halt(message[4] % 0x10)
 
                                     elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
                                         logger.info(f"START COMMAND READ - Channel {self.ch[message[4] % 0x20]}")
-                                        # CALL_FUNC_READ(message[4] % 0x20)
+                                        read_start(message[4] % 0x20)
 
                                     elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
                                         logger.info(f"ENABLE COMMAND READ - Channel {self.ch[message[4] % 0x30]}")
-                                        # CALL_FUNC_READ(message[4] % 0x30)
+                                        read_enable(message[4] % 0x30)
+
+                                    else:
+                                        logger.error("Command not supported")
 
                                 # Variable Write
                                 elif message[1] == 0x20:
                                     if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
                                         logger.info(f"HALT COMMAND RECEIVED - Channel {self.ch[message[4]%0x10]}")
-                                        #CALL_FUNC_WRITE(message[4] % 0x10)
+                                        write_halt(message[4] % 0x10, message[5] and 1)
 
                                     elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
                                         logger.info(f"START COMMAND RECEIVED - Channel {self.ch[message[4] % 0x20]}")
-                                        #CALL_FUNC_WRITE(message[4] % 0x20)
+                                        write_start(message[4] % 0x20, message[5] and 1)
 
                                     elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
                                         logger.info(f"ENABLE COMMAND RECEIVED - Channel {self.ch[message[4] % 0x30]}")
-                                        #CALL_FUNC_WRITE(message[4] % 0x30)
+                                        write_enable(message[4] % 0x30, message[5] and 1)
 
                                     else:
                                         logger.error("Command not supported")
                                 else:
-                                    logger.warning("First byte must be 0x20")
+                                    logger.warning("First byte must be 0x10 or 0x20")
 
                             else:
                                 logger.warning(f"Unknown message: {message}, verify checksum.\n")
