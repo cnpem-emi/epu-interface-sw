@@ -4,11 +4,6 @@ from Adafruit_BBIO.SPI import SPI
 # initialize the bus and device /dev/spidev1.0
 spi = SPI(0,0)
 #-------------------------------------------------------
-# port A: all INPUTS
-# port B: 3 INPUTS and 5 OUTPUTS
-# port C: all tri-state
-# port D: all tri-state
-#-------------------------------------------------------
 '''
 !!! IMPORTANT INFORMATION !!!
 1. For sending data to the register, the SPI mode should be set to 0
