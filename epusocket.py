@@ -89,15 +89,15 @@ class Communication(Thread):
                                 if message[1] == 0x10:
                                     if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
                                         logger.info(f"HALT COMMAND READ - Channel {self.ch[message[4] % 0x10]}")
-                                        read_halt(message[4] % 0x10)
+                                        sendVariable(message[4], 1, read_halt(message[4] % 0x10))
 
                                     elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
                                         logger.info(f"START COMMAND READ - Channel {self.ch[message[4] % 0x20]}")
-                                        read_start(message[4] % 0x20)
+                                        sendVariable(message[4], 1, read_start(message[4] % 0x20))
 
                                     elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
                                         logger.info(f"ENABLE COMMAND READ - Channel {self.ch[message[4] % 0x30]}")
-                                        read_enable(message[4] % 0x30)
+                                        sendVariable(message[4], 1, read_enable(message[4] % 0x30))
 
                                     else:
                                         logger.error("Command not supported")
