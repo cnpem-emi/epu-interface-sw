@@ -18,29 +18,29 @@ def setBit(number, value, bit_index):
 
 def read_start(driver):
     if driver in [0,1]:
-        data = OCR1_read()
+        data = OCR1_read() & 1 << (0 + 4 * driver) 
 
     else:
-        data = OCR2_read()
-    return(data & 1 << (0 + 4 * driver))
+        data = OCR2_read() & 1 << (0 + 4 * (driver % 2))
+    return(data)
 
 def read_enable(driver):
     if driver in [0,1]:
-        data = OCR1_read()
+        data = OCR1_read() & 1 << (1 + 4 * driver)
 
     else:
-        data = OCR2_read()
+        data = OCR2_read() & 1 << (1 + 4 * (driver % 2))
 
-    return(data & 1 << (1 + 4 * driver))
+    return(data)
 
 def read_halt(driver):
     if driver in [0,1]:
-        data = OCR1_read()
+        data = OCR1_read() & 1 << (2 + 4 * driver)
 
     else:
-        data = OCR2_read()
+        data = OCR2_read() & 1 << (2 + 4 * (driver % 2))
 
-    return(data & 1 << (2 + 4 * driver))
+    return(data)
 
 def write_start(driver, value):
     if driver in [0,1]:
