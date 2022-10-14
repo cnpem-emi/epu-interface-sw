@@ -25,7 +25,7 @@ HALT_CH_I =   0x13
 START_CH_I =  0x23
 ENABLE_CH_I = 0x33
 
-def sendVariable(variableID, size):
+def sendVariable(variableID, value, size):
     send_message = [0x00, 0x11] + [c for c in struct.pack("!h", size + 1)] + [variableID]
     if size == 1:
         send_message = send_message + [value]
