@@ -8,8 +8,12 @@ tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 tcp.connect((IP_BBB, PORT_BBB))
 
-def sendVariable(variableID, size):
-    send_message = [0x00, 0x20] + [c for c in struct.pack("!h",size+1)] + [variableID]
+def sendVariable(variableID, size, function):
+    
+    if (function == "R"):
+        send_message = [0x00, 0x10] + [c for c in struct.pack("!h",size+1)] + [variableID]
+    else:
+        send_message = [0x00, 0x20] + [c for c in struct.pack("!h",size+1)] + [variableID]
     return("".join(map(chr,includeChecksum(send_message))))
 
 def includeChecksum(list_values):
@@ -23,4 +27,6 @@ def includeChecksum(list_values):
     return(list_values + [counter])
 
 while(True):
-    tcp.send(sendVariable(int(input("Digite o comando: "), 16), size = 1).encode())
+    func = input("R: Reads - W: Writes")
+    tcp.send(sendVariable(int(input("Digite o comando: "), 16), size = 1, function = func).encode())
+    print(tcp.recv(128).decode("latin-1")
