@@ -29,4 +29,4 @@ def includeChecksum(list_values):
 while(True):
     func = input("R: Reads - W: Writes")
     tcp.send(sendVariable(int(input("Digite o comando: "), 16), size = 1, function = func).encode())
-    print(tcp.recv(128).decode("latin-1"))
+    print([ord(i) for i in tcp.recv(128).decode()])
