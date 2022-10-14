@@ -5,7 +5,7 @@ import socket
 import struct
 import logging
 from threading import Thread
-from epu-serial import *
+from epuSerial import *
 
 # BSMP Variable IDs
 
