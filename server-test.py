@@ -1,7 +1,7 @@
 import socket
 import struct
 
-IP_BBB = "10.0.6.71"
+IP_BBB = "10.0.6.52"
 PORT_BBB = 5050
 
 tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
