@@ -138,7 +138,7 @@ class Communication(Thread):
 # --------------------- MAIN LOOP ---------------------
 # -------------------- starts here --------------------
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)-15s [%(levelname)s] %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+logging.basicConfig(filename="/var/log/epu.log", level=logging.INFO, format='%(asctime)-15s [%(levelname)s] %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
 global logger
 logger = logging.getLogger()
 
