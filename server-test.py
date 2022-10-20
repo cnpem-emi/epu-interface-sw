@@ -29,7 +29,7 @@ def includeChecksum(list_values):
     return(list_values + [counter])
 
 while(True):
-    func = input("Digite o tipo de comando - R: Reads - W: Writes \n")
+    func = input("Digite o tipo de comando - R: Reads - W: Writes \n").upper()
     com = int(input(f"Digite o comando de {command[func]}: \n"), 16)
     
     if(func == "R"):
