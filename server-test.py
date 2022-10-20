@@ -34,7 +34,7 @@ while(True):
     
     if(func == "R"):
         tcp.send(sendVariable(com, size = 1, function = func).encode())
-        print([ord(i) for i in tcp.recv(128).decode()]) 
+        print([ord(i) for i in tcp.recv(128).decode("latin-1")]) 
        
     elif(func == "W"):
         value = int(input("Digite o valor: \n"), 16)
