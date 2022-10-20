@@ -4,6 +4,8 @@ import struct
 IP_BBB = "10.0.6.52"
 PORT_BBB = 5050
 
+command = {"R": "Leitura", "W": "Escrita"}
+
 tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 tcp.connect((IP_BBB, PORT_BBB))
@@ -27,6 +29,8 @@ def includeChecksum(list_values):
     return(list_values + [counter])
 
 while(True):
-    func = input("R: Reads - W: Writes")
-    tcp.send(sendVariable(int(input("Digite o comando: "), 16), size = 1, function = func).encode())
-    print([ord(i) for i in tcp.recv(128).decode()])
+    func = input("Digite o tipo de comando - R: Reads - W: Writes \n")
+    tcp.send(sendVariable(int(input(f"Digite o comando de {command[func]}: \n"), 16), size = 1, function = func).encode())
+    
+    if(func == "R"):
+        print([ord(i) for i in tcp.recv(128).decode()]) 
