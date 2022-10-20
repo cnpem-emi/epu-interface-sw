@@ -49,7 +49,7 @@ def write_start(driver, value):
 
     else:
         current = OCR2_read()
-        OCR2_write(setBit(current, value, 0 + 4 * driver))
+        OCR2_write(setBit(current, value, 0 + 4 * driver % 2))
 
 def write_enable(driver, value):
     if driver in [0,1]:
@@ -58,7 +58,7 @@ def write_enable(driver, value):
 
     else:
         current = OCR2_read()
-        OCR2_write(setBit(current, value, 1 + 4 * driver))
+        OCR2_write(setBit(current, value, 1 + 4 * driver % 2))
 
 def write_halt(driver, value):
     if driver in [0,1]:
@@ -67,4 +67,4 @@ def write_halt(driver, value):
 
     else:
         current = OCR2_read()
-        OCR2_write(setBit(current, value, 2 + 4 * driver))
+        OCR2_write(setBit(current, value, 2 + 4 * driver % 2))
