@@ -4,8 +4,9 @@ import time
 import socket
 import struct
 import logging
-from threading import Thread
 from epuserial import *
+from threading import Thread
+from logging.handlers import RotatingFileHandler
 
 # BSMP Variable IDs
 
@@ -119,7 +120,7 @@ class Communication(Thread):
                                     else:
                                         logger.error("Command not supported")
                                 else:
-                                    logger.warning("First byte must be 0x10 or 0x20")
+                                    logger.warning("Second byte must be 0x10 or 0x20")
 
                             else:
                                 logger.warning(f"Unknown message: {message}, verify checksum.\n")
@@ -137,10 +138,13 @@ class Communication(Thread):
 
 # --------------------- MAIN LOOP ---------------------
 # -------------------- starts here --------------------
+log_formatter = logging.Formartter('%(asctime)-15s [%(levelname)s] %(message)s')
+log_file_path = "/var/log/epu.log"
 
-logging.basicConfig(filename="/var/log/epu.log", level=logging.INFO, format='%(asctime)-15s [%(levelname)s] %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+logging.basicConfig(filename=log_file_path, level=logging.INFO, datefmt='%d/%m/%Y %H:%M:%S')
 global logger
-logger = logging.getLogger()
+logger = RotatingFileHandler(log_file_path, mode = 'a', maxBytes= 5*1024*1024, backupCount=2)
+logging.getLogger()
 
 # Socket thread
 net = Communication(5050)
