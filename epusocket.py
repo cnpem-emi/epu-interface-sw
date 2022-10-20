@@ -105,15 +105,15 @@ class Communication(Thread):
                                 # Variable Write
                                 elif message[1] == 0x20:
                                     if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
-                                        logger.info(f"HALT COMMAND RECEIVED - Channel {self.ch[message[4]%0x10]}")
+                                        logger.info(f"HALT COMMAND RECEIVED - Channel {self.ch[message[4]%0x10]} set to {message[5] and 1}")
                                         write_halt(message[4] % 0x10, message[5] and 1)
 
                                     elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
-                                        logger.info(f"START COMMAND RECEIVED - Channel {self.ch[message[4] % 0x20]}")
+                                        logger.info(f"START COMMAND RECEIVED - Channel {self.ch[message[4] % 0x20]} set to {message[5] and 1}")
                                         write_start(message[4] % 0x20, message[5] and 1)
 
                                     elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
-                                        logger.info(f"ENABLE COMMAND RECEIVED - Channel {self.ch[message[4] % 0x30]}")
+                                        logger.info(f"ENABLE COMMAND RECEIVED - Channel {self.ch[message[4] % 0x30]} set to {message[5] and 1}")
                                         write_enable(message[4] % 0x30, message[5] and 1)
 
                                     else:
