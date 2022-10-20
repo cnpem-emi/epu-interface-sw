@@ -10,12 +10,12 @@ tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 tcp.connect((IP_BBB, PORT_BBB))
 
-def sendVariable(variableID, size, function):
+def sendVariable(variableID, size, function, valueToWrite = 0):
     
     if (function == "R"):
         send_message = [0x00, 0x10] + [c for c in struct.pack("!h",size+1)] + [variableID]
     else:
-        send_message = [0x00, 0x20] + [c for c in struct.pack("!h",size+1)] + [variableID]
+        send_message = [0x00, 0x20] + [c for c in struct.pack("!h",size+1)] + [variableID] + [valueToWrite]
     return("".join(map(chr,includeChecksum(send_message))))
 
 def includeChecksum(list_values):
@@ -30,7 +30,15 @@ def includeChecksum(list_values):
 
 while(True):
     func = input("Digite o tipo de comando - R: Reads - W: Writes \n")
-    tcp.send(sendVariable(int(input(f"Digite o comando de {command[func]}: \n"), 16), size = 1, function = func).encode())
+    com = int(input(f"Digite o comando de {command[func]}: \n"), 16)
     
     if(func == "R"):
+        tcp.send(sendVariable(com, size = 1, function = func).encode())
         print([ord(i) for i in tcp.recv(128).decode()]) 
+       
+    elif(func == "W"):
+        value = int(input("Digite o valor: \n"), 16)
+        tcp.send(sendVariable(com, size = 2, function = func, valueToWrite = value).encode())
+    
+    
+        
