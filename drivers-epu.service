@@ -1,0 +1,13 @@
+[Unit]
+Description=Start Drivers EPU
+
+[Service]
+WorkingDirectory=/root/epu-interface-sw
+ExecStart=/usr/bin/python-sirius epusocket.py
+SyslogIdentifier=DriversEPU
+Restart=on-failure
+RestartSec=5
+
+
+[Install]
+WantedBy=multi-user.target
