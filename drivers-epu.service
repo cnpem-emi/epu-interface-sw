@@ -1,13 +1,18 @@
 [Unit]
-Description=Start Drivers EPU
+Description=Start Drivers EPU Undulator
+Wants=network-online.target
+After=bbb-function.service network-online.target
 
 [Service]
+Type=simple
+Restart=always
+RestartSec=10
 WorkingDirectory=/root/epu-interface-sw
 ExecStart=/usr/bin/python-sirius epusocket.py
 SyslogIdentifier=DriversEPU
-Restart=on-failure
-RestartSec=5
 
+StandardOutput=syslog
+StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target
