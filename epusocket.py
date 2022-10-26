@@ -26,8 +26,8 @@ HALT_CH_I =   0x13
 START_CH_I =  0x23
 ENABLE_CH_I = 0x33
 
-def sendVariable(variableID, value, size):
-    send_message = [0x00, 0x11] + [c for c in struct.pack("!h", size + 1)] + [variableID]
+def sendVariable(statusID, variableID = 0x00, value = 0x00, size = 0):
+    send_message = [0x00, statusID] + [c for c in struct.pack("!h", size + 1)] + [variableID]
     if size == 1:
         send_message = send_message + [value]
     elif size == 2:
@@ -90,40 +90,50 @@ class Communication(Thread):
                                 if message[1] == 0x10:
                                     if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
                                         logger.info(f"HALT COMMAND READ - Channel {self.ch[message[4] % 0x10]}")
-                                        con.send(sendVariable(message[4], read_halt(message[4] % 0x10), 1).encode('latin-1'))
+                                        con.send(sendVariable("0x11", message[4], read_halt(message[4] % 0x10), 1).encode('latin-1'))
 
                                     elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
                                         logger.info(f"START COMMAND READ - Channel {self.ch[message[4] % 0x20]}")
-                                        con.send(sendVariable(message[4], read_start(message[4] % 0x20), 1).encode('latin-1'))
+                                        con.send(sendVariable("0x11", message[4], read_start(message[4] % 0x20), 1).encode('latin-1'))
 
                                     elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
                                         logger.info(f"ENABLE COMMAND READ - Channel {self.ch[message[4] % 0x30]}")
-                                        con.send(sendVariable(message[4], read_enable(message[4] % 0x30), 1).encode('latin-1'))
+                                        con.send(sendVariable("0x11", message[4], read_enable(message[4] % 0x30), 1).encode('latin-1'))
 
                                     else:
                                         logger.error("Command not supported")
 
                                 # Variable Write
                                 elif message[1] == 0x20:
-                                    if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
-                                        logger.info(f"HALT COMMAND RECEIVED - Channel {self.ch[message[4]%0x10]} set to {message[5] and 1}")
-                                        write_halt(message[4] % 0x10, message[5] and 1)
-
-                                    elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
-                                        logger.info(f"START COMMAND RECEIVED - Channel {self.ch[message[4] % 0x20]} set to {message[5] and 1}")
-                                        write_start(message[4] % 0x20, message[5] and 1)
-
-                                    elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
-                                        logger.info(f"ENABLE COMMAND RECEIVED - Channel {self.ch[message[4] % 0x30]} set to {message[5] and 1}")
-                                        write_enable(message[4] % 0x30, message[5] and 1)
-
+                                    try:
+                                        if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
+                                            logger.info(f"HALT COMMAND RECEIVED - Channel {self.ch[message[4]%0x10]} set to {message[5] and 1}")
+                                            write_halt(message[4] % 0x10, message[5] and 1)
+                                        
+                                        elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
+                                            logger.info(f"START COMMAND RECEIVED - Channel {self.ch[message[4] % 0x20]} set to {message[5] and 1}")
+                                            write_start(message[4] % 0x20, message[5] and 1)
+                                        
+                                        elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
+                                            logger.info(f"ENABLE COMMAND RECEIVED - Channel {self.ch[message[4] % 0x30]} set to {message[5] and 1}")
+                                            write_enable(message[4] % 0x30, message[5] and 1)
+                                     
+                                        else:
+                                            con.send(sendVariable("0xe3"))
+                                            logger.error("Command not supported")
+                                    
+                                    except Exception as e:
+                                        logger.warning(f"An error occurred during the write command: {e}"
+                                        con.send(sendVariable("0xe8"))
                                     else:
-                                        logger.error("Command not supported")
+                                        con.send(sendVariable("0xe0"))
+                                                       
                                 else:
                                     logger.warning("Second byte must be 0x10 or 0x20")
 
                             else:
                                 logger.warning(f"Unknown message: {message}, verify checksum.\n")
+                                con.send(sendVariable("0xe1"))
                                 continue
 
                         else:
