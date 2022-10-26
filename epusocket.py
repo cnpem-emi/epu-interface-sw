@@ -10,21 +10,13 @@ from logging.handlers import RotatingFileHandler
 
 # BSMP Variable IDs
 
-HALT_CH_A =   0x10
-START_CH_A =  0x20
-ENABLE_CH_A = 0x30
+HALT_CH_AB =   0x10
+START_CH_AB =  0x20
+ENABLE_CH_AB = 0x30
 
-HALT_CH_B =   0x11
-START_CH_B =  0x21
-ENABLE_CH_B = 0x31
-
-HALT_CH_S =   0x12
-START_CH_S =  0x22
-ENABLE_CH_S = 0x32
-
-HALT_CH_I =   0x13
-START_CH_I =  0x23
-ENABLE_CH_I = 0x33
+HALT_CH_SI =   0x11
+START_CH_SI =  0x21
+ENABLE_CH_SI = 0x31
 
 
 # Status code
@@ -96,15 +88,15 @@ class Communication(Thread):
                             if (verifyChecksum(message) == 0):
                                 # Variable Read
                                 if message[1] == 0x10:
-                                    if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
+                                    if message[4] in [HALT_CH_AB, HALT_CH_SI]:
                                         logger.info(f"HALT COMMAND READ - Channel {self.ch[message[4] % 0x10]}")
                                         con.send(sendVariable("0x11", message[4], read_halt(message[4] % 0x10), 1).encode('latin-1'))
 
-                                    elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
+                                    elif message[4] in [START_CH_AB, START_CH_SI]:
                                         logger.info(f"START COMMAND READ - Channel {self.ch[message[4] % 0x20]}")
                                         con.send(sendVariable("0x11", message[4], read_start(message[4] % 0x20), 1).encode('latin-1'))
 
-                                    elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
+                                    elif message[4] in [ENABLE_CH_AB, ENABLE_CH_SI]:
                                         logger.info(f"ENABLE COMMAND READ - Channel {self.ch[message[4] % 0x30]}")
                                         con.send(sendVariable("0x11", message[4], read_enable(message[4] % 0x30), 1).encode('latin-1'))
 
@@ -114,15 +106,15 @@ class Communication(Thread):
                                 # Variable Write
                                 elif message[1] == 0x20:
                                     try:
-                                        if message[4] in [HALT_CH_A, HALT_CH_B, HALT_CH_S, HALT_CH_I]:
+                                        if message[4] in [HALT_CH_AB, HALT_CH_SI]:
                                             logger.info(f"HALT COMMAND RECEIVED - Channel {self.ch[message[4]%0x10]} set to {message[5] and 1}")
                                             write_halt(message[4] % 0x10, message[5] and 1)
                                         
-                                        elif message[4] in [START_CH_A, START_CH_B, START_CH_S, START_CH_I]:
+                                        elif message[4] in [START_CH_AB, START_CH_SI]:
                                             logger.info(f"START COMMAND RECEIVED - Channel {self.ch[message[4] % 0x20]} set to {message[5] and 1}")
-                                            write_start(message[4] % 0x20, message[5] and 1)
+                                            write_start(message[4] % 0x20)
                                         
-                                        elif message[4] in [ENABLE_CH_A, ENABLE_CH_B, ENABLE_CH_S, ENABLE_CH_I]:
+                                        elif message[4] in [ENABLE_CH_AB, ENABLE_CH_SI]:
                                             logger.info(f"ENABLE COMMAND RECEIVED - Channel {self.ch[message[4] % 0x30]} set to {message[5] and 1}")
                                             write_enable(message[4] % 0x30, message[5] and 1)
                                      
