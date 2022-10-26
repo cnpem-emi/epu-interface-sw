@@ -28,20 +28,12 @@ def read_start(driver):
     return(data)
 
 def read_enable(driver):
-    if (driver == 0):
-        data = OCR1_read() & 1 << (1 + 4 * driver)
-
-    else:
-        data = OCR2_read() & 1 << (1 + 4 * (driver % 2))
+    data = OCR1_read() & 1 << (1 + 4 * driver)
 
     return(data)
 
 def read_halt(driver):
-    if (driver == 0):
-        data = OCR1_read() & 1 << (2 + 4 * driver)
-
-    else:
-        data = OCR2_read() & 1 << (2 + 4 * (driver % 2))
+    data = OCR1_read() & 1 << (2 + 4 * driver)
 
     return(data)
 
@@ -49,38 +41,21 @@ def write_start(driver):
     global start_count_AB
     global start_count_SI
     
-    if (driver == 0):
-        current = OCR1_read()
+    current = OCR1_read()
 
-        OCR1_write(setBit(current, 1, 0 + 4 * driver))
-        sleep(0.03)
-        OCR1_write(setBit(current, 0, 0 + 4 * driver))
+    OCR1_write(setBit(current, 1, 0 + 4 * driver))
+    sleep(0.03)
+    OCR1_write(setBit(current, 0, 0 + 4 * driver))
 
+    if driver:
+        start_count_SI += 1
+    else:
         start_count_AB += 1
 
-    else:
-        current = OCR2_read()
-
-        OCR2_write(setBit(current, 1, 0 + 4 * (driver % 2)))
-        sleep(0.03)
-        OCR2_write(setBit(current, 0, 0 + 4 * (driver % 2)))
-
-        start_count_SI += 1
-
 def write_enable(driver, value):
-    if (driver == 0):
-        current = OCR1_read()
-        OCR1_write(setBit(current, value, 1 + 4 * driver))
-
-    else:
-        current = OCR2_read()
-        OCR2_write(setBit(current, value, 1 + 4 * (driver % 2)))
+    current = OCR1_read()
+    OCR1_write(setBit(current, value, 1 + 4 * driver))
 
 def write_halt(driver, value):
-    if (driver == 0):
-        current = OCR1_read()
-        OCR1_write(setBit(current, value, 2 + 4 * driver))
-
-    else:
-        current = OCR2_read()
-        OCR2_write(setBit(current, value, 2 + 4 * (driver % 2)))
+    current = OCR1_read()
+    OCR1_write(setBit(current, value, 2 + 4 * driver))
