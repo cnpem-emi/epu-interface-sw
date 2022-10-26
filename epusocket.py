@@ -125,7 +125,7 @@ class Communication(Thread):
                                             logger.error("Command not supported")
                                     
                                     except Exception as e:
-                                        logger.warning(f"An error occurred during the write command: {e}"
+                                        logger.warning(f"An error occurred during the write command: {e}")
                                         con.send(sendVariable(BUSY))
                                     else:
                                         con.send(sendVariable(WRITE_OK))
