@@ -46,6 +46,9 @@ def read_halt(driver):
     return(data)
 
 def write_start(driver):
+    global start_count_AB
+    global start_count_SI
+    
     if (driver == 0):
         current = OCR1_read()
 
