@@ -102,7 +102,7 @@ class Communication(Thread):
                                         con.send(sendVariable(READ_OK, message[4], read_enable(message[4] % 0x30), 1).encode('latin-1'))
 
                                     else:
-                                        con.send(sendVariable(INVALID_ID))
+                                        con.send(sendVariable(INVALID_ID).encode('latin-1'))
                                         logger.error("Command not supported")
 
                                 # Variable Write
@@ -121,22 +121,22 @@ class Communication(Thread):
                                             write_enable(message[4] % 0x30, message[5] and 1)
                                      
                                         else:
-                                            con.send(sendVariable(INVALID_ID))
+                                            con.send(sendVariable(INVALID_ID).encode('latin-1'))
                                             logger.error("Command not supported")
                                     
                                     except Exception as e:
                                         logger.warning(f"An error occurred during the write command: {e}")
-                                        con.send(sendVariable(BUSY))
+                                        con.send(sendVariable(BUSY).encode('latin-1'))
                                     else:
-                                        con.send(sendVariable(WRITE_OK))
+                                        con.send(sendVariable(WRITE_OK).encode('latin-1'))
                                                        
                                 else:
                                     logger.warning("Second byte must be 0x10 or 0x20")
-                                    con.send(sendVariable(BAD_FORMATTED))
+                                    con.send(sendVariable(BAD_FORMATTED).encode('latin-1'))
 
                             else:
                                 logger.warning(f"Unknown message: {message}, verify checksum.\n")
-                                con.send(sendVariable(BAD_FORMATTED))
+                                con.send(sendVariable(BAD_FORMATTED).encode('latin-1'))
                                 continue
 
                         else:
