@@ -151,9 +151,18 @@ class Communication(Thread):
 
 # --------------------- MAIN LOOP ---------------------
 # -------------------- starts here --------------------
-logging.basicConfig(level=logging.INFO, format='%(asctime)-15s [%(levelname)s] %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+log_formatter = logging.Formatter('%(asctime)-15s [%(levelname)s] %(message)s')
+log_file_path = "/var/log/epu.log"
+
+my_handler = RotatingFileHandler(log_file_path, maxBytes=5*1024*1024, backupCount=2)
+my_handler.setFormatter(log_formatter)
+my_handler.setLevel(logging.INFO)
+
+
 global logger
 logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(my_handler)
 
 # Socket thread
 net = Communication(5050)
