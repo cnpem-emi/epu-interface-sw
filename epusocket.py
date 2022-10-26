@@ -26,6 +26,14 @@ HALT_CH_I =   0x13
 START_CH_I =  0x23
 ENABLE_CH_I = 0x33
 
+
+# Status code
+
+OK =            0xe0
+BUSY =          0xe8
+INVALID_ID =    0xe3
+BAD_FORMATTED = 0xe1
+
 def sendVariable(statusID, variableID = 0x00, value = 0x00, size = 0):
     send_message = [0x00, statusID] + [c for c in struct.pack("!h", size + 1)] + [variableID]
     if size == 1:
@@ -119,21 +127,21 @@ class Communication(Thread):
                                             write_enable(message[4] % 0x30, message[5] and 1)
                                      
                                         else:
-                                            con.send(sendVariable("0xe3"))
+                                            con.send(sendVariable(INVALID_ID))
                                             logger.error("Command not supported")
                                     
                                     except Exception as e:
                                         logger.warning(f"An error occurred during the write command: {e}"
-                                        con.send(sendVariable("0xe8"))
+                                        con.send(sendVariable(BUSY))
                                     else:
-                                        con.send(sendVariable("0xe0"))
+                                        con.send(sendVariable(OK))
                                                        
                                 else:
                                     logger.warning("Second byte must be 0x10 or 0x20")
 
                             else:
                                 logger.warning(f"Unknown message: {message}, verify checksum.\n")
-                                con.send(sendVariable("0xe1"))
+                                con.send(sendVariable(BAD_FORMATTED))
                                 continue
 
                         else:
