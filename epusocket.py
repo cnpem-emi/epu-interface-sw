@@ -21,8 +21,9 @@ ENABLE_CH_SI = 0x31
 
 # Status code
 
-OK =            0xe0
 BUSY =          0xe8
+READ_OK =       0x11
+WRITE_OK =      0xe0
 INVALID_ID =    0xe3
 BAD_FORMATTED = 0xe1
 
@@ -60,7 +61,7 @@ class Communication(Thread):
     def __init__(self, port):
         Thread.__init__(self)
         self.port = port
-        self.ch = {0:"A", 1:"B", 2:"S", 3:"I"}
+        self.ch = {0:"AB", 1:"SI"}
 
     def run(self):
         while True:
@@ -90,17 +91,18 @@ class Communication(Thread):
                                 if message[1] == 0x10:
                                     if message[4] in [HALT_CH_AB, HALT_CH_SI]:
                                         logger.info(f"HALT COMMAND READ - Channel {self.ch[message[4] % 0x10]}")
-                                        con.send(sendVariable("0x11", message[4], read_halt(message[4] % 0x10), 1).encode('latin-1'))
+                                        con.send(sendVariable(READ_OK, message[4], read_halt(message[4] % 0x10), 1).encode('latin-1'))
 
                                     elif message[4] in [START_CH_AB, START_CH_SI]:
                                         logger.info(f"START COMMAND READ - Channel {self.ch[message[4] % 0x20]}")
-                                        con.send(sendVariable("0x11", message[4], read_start(message[4] % 0x20), 1).encode('latin-1'))
+                                        con.send(sendVariable(READ_OK, message[4], read_start(message[4] % 0x20), 1).encode('latin-1'))
 
                                     elif message[4] in [ENABLE_CH_AB, ENABLE_CH_SI]:
                                         logger.info(f"ENABLE COMMAND READ - Channel {self.ch[message[4] % 0x30]}")
-                                        con.send(sendVariable("0x11", message[4], read_enable(message[4] % 0x30), 1).encode('latin-1'))
+                                        con.send(sendVariable(READ_OK, message[4], read_enable(message[4] % 0x30), 1).encode('latin-1'))
 
                                     else:
+                                        con.send(sendVariable(INVALID_ID))
                                         logger.error("Command not supported")
 
                                 # Variable Write
@@ -126,10 +128,11 @@ class Communication(Thread):
                                         logger.warning(f"An error occurred during the write command: {e}"
                                         con.send(sendVariable(BUSY))
                                     else:
-                                        con.send(sendVariable(OK))
+                                        con.send(sendVariable(WRITE_OK))
                                                        
                                 else:
                                     logger.warning("Second byte must be 0x10 or 0x20")
+                                    con.send(sendVariable(BAD_FORMATTED))
 
                             else:
                                 logger.warning(f"Unknown message: {message}, verify checksum.\n")
