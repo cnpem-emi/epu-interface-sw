@@ -8,7 +8,7 @@ Type=simple
 Restart=always
 RestartSec=10
 WorkingDirectory=/root/epu-interface-sw
-ExecStart=/usr/bin/python-sirius epusocket.py
+ExecStart=/usr/bin/bash run.sh
 SyslogIdentifier=DriversEPU
 
 StandardOutput=syslog
