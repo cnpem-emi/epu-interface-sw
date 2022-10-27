@@ -5,10 +5,10 @@ After=bbb-function.service network-online.target
 
 [Service]
 Type=simple
-Restart=always
+Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/epu-interface-sw
-ExecStart=/usr/bin/bash run.sh
+ExecStart=/bin/bash run.sh
 SyslogIdentifier=DriversEPU
 
 StandardOutput=syslog

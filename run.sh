@@ -11,5 +11,4 @@ echo "Starting socket"
 
 pushd scripts
     ./epusocket.py
-
 popd
