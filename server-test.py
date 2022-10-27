@@ -6,6 +6,14 @@ PORT_BBB = 5050
 
 command = {"R": "Leitura", "W": "Escrita"}
 
+status_code = {
+                0xe8: "Busy",
+                0x11: "Read ok",
+                0xe0: "Write ok",
+                0xe3: "Invalid ID",
+                0xe1: "Bad formatter"
+            }
+
 tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 tcp.connect((IP_BBB, PORT_BBB))
@@ -33,7 +41,7 @@ def includeChecksum(list_values):
     return(list_values + [counter])
 
 while(True):
-    func = input("Digite o tipo de comando - R: Reads - W: Writes \n").upper()
+    func = input("---\nDigite o tipo de comando - R: Reads - W: Writes \n").upper()
     com = int(input(f"Digite o comando de {command[func]}: \n"), 16)
     
     if(func == "R"):
@@ -45,7 +53,12 @@ while(True):
     
     else: 
         tcp.send(sendVariable(com, size=1, function=func).encode())
-        
-    print([ord(i) for i in tcp.recv(128).decode("latin-1")])
+
+    resp = [ord(i) for i in tcp.recv(128).decode("latin-1")]
+
+    print("\nStatus: ", status_code[resp[1]], "\n")
+
+    if resp[1] == 0x11:
+        print("Valor lido:", resp[5], "\n")
     
         
