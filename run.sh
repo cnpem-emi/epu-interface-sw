@@ -6,6 +6,7 @@ echo "Exporting SPI pins"
 ./configpin.sh
 
 echo "Setting RS485 interface"
+socat TCP-LISTEN:5002,reuseaddr,fork,nodelay FILE:/dev/ttyUSB0,b115200 &
 
 echo "Starting socket"
 
