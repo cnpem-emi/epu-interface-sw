@@ -39,12 +39,10 @@ def sendVariable(statusID, variableID = 0x00, value = 0x00, size = 0):
 
 def includeChecksum(list_values):
     counter = 0
-    i = 0
-    while (i < len(list_values)):
-        counter += list_values[i]
-        i += 1
-    counter = (counter & 0xFF)
-    counter = (256 - counter) & 0xFF
+    for data in list_values:
+        counter += data
+        
+    counter -= 256
     return(list_values + [counter])
 
 def verifyChecksum(list_values):
