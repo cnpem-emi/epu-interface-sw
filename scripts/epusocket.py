@@ -42,7 +42,8 @@ def includeChecksum(list_values):
     for data in list_values:
         counter += data
         
-    counter -= 256
+    counter &= 0xff
+    counter = (256 - counter) & 0xff
     return(list_values + [counter])
 
 def verifyChecksum(list_values):
