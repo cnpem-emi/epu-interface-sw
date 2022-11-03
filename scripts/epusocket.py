@@ -51,7 +51,7 @@ def verifyChecksum(list_values):
     for data in list_values:
         counter += data
        
-    counter = (counter & 255)
+    counter &= 0xff
     return(counter)
 
 # Thead to send and receive values on demand
