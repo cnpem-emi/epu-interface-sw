@@ -20,11 +20,11 @@ def setBit(number, value, bit_index):
     return(number)
 
 def read_start(driver):
-    if (driver == 0):
-        data = start_count_AB
+    if driver:
+        data = start_count_SI
 
     else:
-        data = start_count_SI
+        data = start_count_AB
     return(data)
 
 def read_enable(driver):
