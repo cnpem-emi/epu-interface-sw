@@ -43,9 +43,9 @@ def write_start(driver):
     
     current = OCR1_read()
 
-    OCR1_write(setBit(current, 1, 0 + 4 * driver))
+    OCR1_write(setBit(current, 1, 4 * driver))
     sleep(0.03)
-    OCR1_write(setBit(current, 0, 0 + 4 * driver))
+    OCR1_write(setBit(current, 0, 4 * driver))
 
     if driver:
         start_count_SI += 1
@@ -59,3 +59,9 @@ def write_enable(driver, value):
 def write_halt(driver, value):
     current = OCR1_read()
     OCR1_write(setBit(current, value, 2 + 4 * driver))
+
+def reset(driver):
+    current = OCR2_read()
+    OCR2_write(setBit(current, 1, 4 * driver))
+    sleep(1)
+    OCR2_write(setBit(current, 0, 4 * driver))
