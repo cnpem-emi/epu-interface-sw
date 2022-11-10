@@ -18,6 +18,8 @@ HALT_CH_SI =   0x11
 START_CH_SI =  0x21
 ENABLE_CH_SI = 0x31
 
+RESET_CH_AB =  0x40
+RESET_CH_SI =  0x41
 
 # Status code
 
@@ -90,15 +92,15 @@ class Communication(Thread):
                                 # Variable Read
                                 if message[1] == 0x10:
                                     if message[4] in [HALT_CH_AB, HALT_CH_SI]:
-                                        logger.info(f"HALT COMMAND READ - Channel {self.ch[message[4] % 0x10]}")
+                                        logger.info(f"HALT COMMAND READ - Channels {self.ch[message[4] % 0x10]}")
                                         con.send(sendVariable(READ_OK, message[4], read_halt(message[4] % 0x10), 1).encode('latin-1'))
 
                                     elif message[4] in [START_CH_AB, START_CH_SI]:
-                                        logger.info(f"START COMMAND READ - Channel {self.ch[message[4] % 0x20]}")
+                                        logger.info(f"START COMMAND READ - Channels {self.ch[message[4] % 0x20]}")
                                         con.send(sendVariable(READ_OK, message[4], read_start(message[4] % 0x20), 1).encode('latin-1'))
 
                                     elif message[4] in [ENABLE_CH_AB, ENABLE_CH_SI]:
-                                        logger.info(f"ENABLE COMMAND READ - Channel {self.ch[message[4] % 0x30]}")
+                                        logger.info(f"ENABLE COMMAND READ - Channels {self.ch[message[4] % 0x30]}")
                                         con.send(sendVariable(READ_OK, message[4], read_enable(message[4] % 0x30), 1).encode('latin-1'))
 
                                     else:
@@ -109,17 +111,21 @@ class Communication(Thread):
                                 elif message[1] == 0x20:
                                     try:
                                         if message[4] in [HALT_CH_AB, HALT_CH_SI]:
-                                            logger.info(f"HALT COMMAND RECEIVED - Channel {self.ch[message[4]%0x10]} set to {message[5] and 1}")
+                                            logger.info(f"HALT COMMAND RECEIVED - Channels {self.ch[message[4]%0x10]} set to {message[5] and 1}")
                                             write_halt(message[4] % 0x10, message[5] and 1)
                                         
                                         elif message[4] in [START_CH_AB, START_CH_SI]:
-                                            logger.info(f"START COMMAND RECEIVED - Channel {self.ch[message[4] % 0x20]} set to {message[5] and 1}")
+                                            logger.info(f"START COMMAND RECEIVED - Channels {self.ch[message[4] % 0x20]} set to {message[5] and 1}")
                                             write_start(message[4] % 0x20)
                                         
                                         elif message[4] in [ENABLE_CH_AB, ENABLE_CH_SI]:
-                                            logger.info(f"ENABLE COMMAND RECEIVED - Channel {self.ch[message[4] % 0x30]} set to {message[5] and 1}")
+                                            logger.info(f"ENABLE COMMAND RECEIVED - Channels {self.ch[message[4] % 0x30]} set to {message[5] and 1}")
                                             write_enable(message[4] % 0x30, message[5] and 1)
                                      
+                                        elif message[4] in [RESET_CH_AB, RESET_CH_SI]:
+                                            logger.info(f"RESET COMMAND RECEIVED - Channels {self.ch[message[4] % 0x40]}")
+                                            reset(message[4] % 0x40)
+                                    
                                         else:
                                             con.send(sendVariable(INVALID_ID).encode('latin-1'))
                                             logger.error("Command not supported")
