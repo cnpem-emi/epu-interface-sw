@@ -62,6 +62,6 @@ def write_halt(driver, value):
 
 def reset(driver):
     current = OCR2_read()
-    OCR2_write(setBit(current, 1, 4 * driver))
+    OCR2_write(setBit(current, 1, driver))
     sleep(1)
-    OCR2_write(setBit(current, 0, 4 * driver))
+    OCR2_write(setBit(current, 0, driver))
