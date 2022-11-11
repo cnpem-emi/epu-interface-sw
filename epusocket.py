@@ -148,6 +148,7 @@ class Communication(Thread):
                         else:
                             # Disconnection
                             logger.info(f"Client {client_info[0]}:{str(client_info[1])} disconected.\n")
+                            con.close()
                             break
 
             except Exception as e:
