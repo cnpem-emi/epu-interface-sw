@@ -1,13 +1,14 @@
 [Unit]
 Description=Start Drivers EPU Undulator
 Wants=network-online.target
-After=bbb-function.service network-online.target
+After=network-online.target
 
 [Service]
 Type=simple
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/root/epu-interface-sw
+ExecStartPre=/bin/sleep 20
 ExecStart=/bin/bash run.sh
 SyslogIdentifier=DriversEPU
 
